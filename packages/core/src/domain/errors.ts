@@ -79,6 +79,29 @@ export class CliUnavailable extends Schema.TaggedError<CliUnavailable>()("CliUna
   installHint: Schema.String,
 }) {}
 
+export class CommandInputError extends Schema.TaggedError<CommandInputError>()(
+  "CommandInputError",
+  {
+    command: Schema.String,
+    message: Schema.String,
+    details: Schema.optional(Schema.Unknown),
+  },
+) {}
+
+export class CliStoreError extends Schema.TaggedError<CliStoreError>()("CliStoreError", {
+  operation: Schema.String,
+  path: Schema.optional(Schema.String),
+  reason: Schema.String,
+}) {}
+
+export class TaskWaitTimedOut extends Schema.TaggedError<TaskWaitTimedOut>()(
+  "TaskWaitTimedOut",
+  {
+    id: Schema.String,
+    timeoutMs: NonNegativeInt,
+  },
+) {}
+
 export const BackgroundTaskError = Schema.Union(
   TaskNotFound,
   SpawnFailed,
@@ -91,6 +114,9 @@ export const BackgroundTaskError = Schema.Union(
   LogBufferConfigurationError,
   LogBufferQueryError,
   CliUnavailable,
+  CommandInputError,
+  CliStoreError,
+  TaskWaitTimedOut,
 );
 
 export type BackgroundTaskError = typeof BackgroundTaskError.Type;

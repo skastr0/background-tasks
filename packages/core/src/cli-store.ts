@@ -2,6 +2,14 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { Effect, Schema } from "effect";
+import {
+  CliStoreError,
+  CommandInputError,
+  SpawnFailed,
+  TaskAlreadyRunning,
+  TaskNotFound,
+  TaskWaitTimedOut,
+} from "./domain/errors.ts";
 
 export const CliTaskStatus = Schema.Literal("running", "exited", "killed", "failed");
 export type CliTaskStatus = typeof CliTaskStatus.Type;
@@ -55,6 +63,11 @@ export interface CliLogsOptions {
   readonly lines?: number;
 }
 
+export interface CliWaitOptions {
+  readonly timeoutMs?: number;
+  readonly pollIntervalMs?: number;
+}
+
 const defaultRoot = () =>
   process.env.BACKGROUND_TASKS_HOME ??
   join(process.env.HOME ?? process.cwd(), ".local", "state", "background-tasks");
@@ -95,7 +108,12 @@ const ensureStore = (paths: CliStorePaths) =>
         await writeFile(paths.registry, `${JSON.stringify({ tasks: [] }, null, 2)}\n`);
       }
     },
-    catch: (cause) => new Error(`failed to initialize task store: ${String(cause)}`),
+    catch: (cause) =>
+      new CliStoreError({
+        operation: "initialize",
+        path: paths.root,
+        reason: String(cause),
+      }),
   });
 
 const readRegistry = (paths: CliStorePaths) =>
@@ -103,9 +121,32 @@ const readRegistry = (paths: CliStorePaths) =>
     yield* ensureStore(paths);
     const raw = yield* Effect.tryPromise({
       try: () => readFile(paths.registry, "utf8"),
-      catch: (cause) => new Error(`failed to read task registry: ${String(cause)}`),
+      catch: (cause) =>
+        new CliStoreError({
+          operation: "readRegistry",
+          path: paths.registry,
+          reason: String(cause),
+        }),
     });
-    return yield* decodeRegistry(JSON.parse(raw));
+    const parsed = yield* Effect.try({
+      try: () => JSON.parse(raw) as unknown,
+      catch: (cause) =>
+        new CliStoreError({
+          operation: "parseRegistry",
+          path: paths.registry,
+          reason: String(cause),
+        }),
+    });
+    return yield* decodeRegistry(parsed).pipe(
+      Effect.mapError(
+        (cause) =>
+          new CliStoreError({
+            operation: "decodeRegistry",
+            path: paths.registry,
+            reason: String(cause),
+          }),
+      ),
+    );
   });
 
 const writeRegistry = (paths: CliStorePaths, registry: CliRegistry) =>
@@ -114,7 +155,12 @@ const writeRegistry = (paths: CliStorePaths, registry: CliRegistry) =>
       await mkdir(dirname(paths.registry), { recursive: true });
       await writeFile(paths.registry, `${JSON.stringify(registry, null, 2)}\n`);
     },
-    catch: (cause) => new Error(`failed to write task registry: ${String(cause)}`),
+    catch: (cause) =>
+      new CliStoreError({
+        operation: "writeRegistry",
+        path: paths.registry,
+        reason: String(cause),
+      }),
   });
 
 const refreshTask = (task: CliTaskRecord): CliTaskRecord => {
@@ -147,7 +193,7 @@ export const getCliTask = (id: string, paths = resolveCliStorePaths()) =>
     const tasks = yield* listCliTasks(paths);
     const task = tasks.find((candidate) => candidate.id === id);
     if (!task) {
-      return yield* Effect.fail(new Error(`task not found: ${id}`));
+      return yield* new TaskNotFound({ id });
     }
     return task;
   });
@@ -156,23 +202,36 @@ export const startCliTask = (input: CliStartInput, paths = resolveCliStorePaths(
   Effect.gen(function* () {
     const command = input.command.trim();
     if (!command) {
-      return yield* Effect.fail(new Error("command must not be blank"));
+      return yield* new CommandInputError({
+        command: "start",
+        message: "command must not be blank",
+        details: {
+          field: "command",
+          expected: "non-empty string",
+          hint: "Provide a command in the start payload.",
+          retryable: false,
+        },
+      });
     }
 
     const registry = yield* readRegistry(paths);
     const id = normalizeId(input);
     if (registry.tasks.some((task) => task.id === id && refreshTask(task).status === "running")) {
-      return yield* Effect.fail(new Error(`task already running: ${id}`));
+      return yield* new TaskAlreadyRunning({ id });
     }
 
     const workdir = resolve(input.workdir ?? process.cwd());
     const logPath = join(paths.logs, `${id}.log`);
-    const subprocess = Bun.spawn([command, ...(input.args ?? [])], {
-      cwd: workdir,
-      env: { ...process.env, ...(input.env ?? {}) },
-      stdout: Bun.file(logPath),
-      stderr: Bun.file(logPath),
-      stdin: "ignore",
+    const subprocess = yield* Effect.try({
+      try: () =>
+        Bun.spawn([command, ...(input.args ?? [])], {
+          cwd: workdir,
+          env: { ...process.env, ...(input.env ?? {}) },
+          stdout: Bun.file(logPath),
+          stderr: Bun.file(logPath),
+          stdin: "ignore",
+        }),
+      catch: (cause) => new SpawnFailed({ command, reason: String(cause) }),
     });
     subprocess.unref();
 
@@ -206,7 +265,7 @@ export const stopCliTask = (id: string, paths = resolveCliStorePaths()) =>
     const registry = yield* readRegistry(paths);
     const task = registry.tasks.find((candidate) => candidate.id === id);
     if (!task) {
-      return yield* Effect.fail(new Error(`task not found: ${id}`));
+      return yield* new TaskNotFound({ id });
     }
     const refreshed = refreshTask(task);
     if (refreshed.pid && refreshed.status === "running") {
@@ -270,7 +329,12 @@ export const readCliTaskLogs = (
     const task = yield* getCliTask(id, paths);
     const text = yield* Effect.tryPromise({
       try: async () => (existsSync(task.logPath) ? readFile(task.logPath, "utf8") : ""),
-      catch: (cause) => new Error(`failed to read logs for ${id}: ${String(cause)}`),
+      catch: (cause) =>
+        new CliStoreError({
+          operation: "readLogs",
+          path: task.logPath,
+          reason: String(cause),
+        }),
     });
     const lines = text.length ? text.replace(/\n$/, "").split(/\r?\n/) : [];
     return {
@@ -278,4 +342,40 @@ export const readCliTaskLogs = (
       lines: options.lines ? lines.slice(-options.lines) : lines,
       totalLines: lines.length,
     };
+  });
+
+const terminalStatuses = new Set<CliTaskStatus>(["exited", "killed", "failed"]);
+
+export const waitForCliTask = (
+  id: string,
+  options: CliWaitOptions = {},
+  paths = resolveCliStorePaths(),
+) =>
+  Effect.gen(function* () {
+    const timeoutMs = options.timeoutMs ?? 60_000;
+    const pollIntervalMs = options.pollIntervalMs ?? 250;
+    if (timeoutMs < 0 || !Number.isFinite(timeoutMs)) {
+      return yield* new CommandInputError({
+        command: "wait",
+        message: "timeoutMs must be a non-negative finite number",
+        details: {
+          field: "timeoutMs",
+          expected: "non-negative finite number",
+          received: timeoutMs,
+          retryable: false,
+        },
+      });
+    }
+
+    const deadline = Date.now() + timeoutMs;
+    let task = yield* getCliTask(id, paths);
+    while (!terminalStatuses.has(task.status)) {
+      if (Date.now() >= deadline) {
+        return yield* new TaskWaitTimedOut({ id, timeoutMs });
+      }
+      yield* Effect.sleep(`${pollIntervalMs} millis`);
+      task = yield* getCliTask(id, paths);
+    }
+
+    return task;
   });

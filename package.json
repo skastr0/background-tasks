@@ -12,7 +12,10 @@
     "dev": "bun run apps/cli/src/cli.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build apps/cli/src/cli.ts apps/opencode-plugin/src/server.ts apps/opencode-tui/src/tui.ts --outdir dist --target bun --format esm --external @opencode-ai/plugin --external @opencode-ai/plugin/tui"
+    "build": "bun build apps/cli/src/cli.ts apps/opencode-plugin/src/server.ts apps/opencode-tui/src/tui.ts --outdir dist --target bun --format esm --external @opencode-ai/plugin --external @opencode-ai/plugin/tui",
+    "build:cli": "bun build apps/cli/src/cli.ts --outdir dist --target bun --format esm",
+    "build:binary": "bun build apps/cli/src/cli.ts --compile --outfile dist/background-tasks",
+    "install:local": "bun run build:binary && mkdir -p \"$HOME/.local/bin\" && cp dist/background-tasks \"$HOME/.local/bin/background-tasks\""
   },
   "dependencies": {
     "@effect/platform": "^0.96.0",
