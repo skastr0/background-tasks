@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@background-tasks/core": ["packages/core/src/index.ts"],
+      "@background-tasks/core/*": ["packages/core/src/*"]
+    },
+    "strict": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "types": ["bun"]
+  },
+  "include": ["packages/**/*.ts", "apps/**/*.ts", "test/**/*.ts"]
+}

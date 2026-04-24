@@ -1,0 +1,11 @@
+{
+  "name": "@background-tasks/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "background-tasks": "./src/cli.ts"
+  },
+  "dependencies": {
+    "@background-tasks/core": "workspace:*"
+  }
+}

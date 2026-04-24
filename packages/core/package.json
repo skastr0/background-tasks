@@ -1,0 +1,11 @@
+{
+  "name": "@background-tasks/core",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cli-store": "./src/cli-store.ts",
+    "./control-plane": "./src/control-plane.ts",
+    "./agent-cli": "./src/agent-cli.ts"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@background-tasks/opencode-tui",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/tui.ts"
+  },
+  "dependencies": {
+    "@background-tasks/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": ">=1.4.0"
+  }
+}
