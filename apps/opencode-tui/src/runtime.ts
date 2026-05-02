@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { Context, Layer, ManagedRuntime } from "effect";
+import { Context, Effect, Layer, ManagedRuntime } from "effect";
 import type { PluginOptions } from "@opencode-ai/plugin";
 import type { TuiPluginApi, TuiPluginMeta } from "@opencode-ai/plugin/tui";
 import {
@@ -24,6 +24,7 @@ import {
   type BgControlPlaneSpawnRequest,
   type BgTaskSnapshot,
 } from "@background-tasks/core/control-plane";
+import { promptWithSessionContext, type TuiSessionPromptClient } from "./session-prompt";
 
 export interface BackgroundTasksTuiPluginOptions extends PluginOptions {
   readonly keybinds?: Record<string, unknown>;
@@ -32,17 +33,7 @@ export interface BackgroundTasksTuiPluginOptions extends PluginOptions {
 export interface BackgroundTasksTuiApiStateHost {
   readonly state: TuiPluginApi["state"];
   readonly client: {
-    readonly session: {
-      readonly prompt: (input: {
-        readonly sessionID: string;
-        readonly noReply: boolean;
-        readonly parts: Array<{
-          readonly type: "text";
-          readonly text: string;
-          readonly synthetic?: boolean;
-        }>;
-      }) => Promise<unknown>;
-    };
+    readonly session: TuiSessionPromptClient["session"];
   };
 }
 
@@ -314,17 +305,18 @@ const createBridge = (host: TuiHostService): BackgroundTasksTuiBridgeService => 
     }
 
     const token = crypto.randomUUID().replace(/-/g, "");
-    await host.api.client.session.prompt({
-      sessionID,
-      noReply: true,
-      parts: [
-        {
-          type: "text",
-          text: buildBgControlPlaneRegistrationMessage(token),
-          synthetic: true,
-        },
-      ],
-    });
+    await Effect.runPromise(
+      promptWithSessionContext(host.api.client, sessionID, {
+        noReply: true,
+        parts: [
+          {
+            type: "text",
+            text: buildBgControlPlaneRegistrationMessage(token),
+            synthetic: true,
+          },
+        ],
+      }),
+    );
     sessionTokens.set(sessionID, token);
     return token;
   };
@@ -380,6 +372,7 @@ export function createBackgroundTasksTuiRuntime(
       state: api.state,
       client: {
         session: {
+          messages: (input) => api.client.session.messages(input),
           prompt: (input) => api.client.session.prompt(input),
         },
       },
