@@ -1,6 +1,41 @@
 # Background Tasks
 
-`background-tasks` is an agentic control-plane CLI for local background processes. It starts tasks, keeps lifecycle state in a local store, captures logs, and exposes machine-stable JSON for automation.
+`background-tasks` is an experimental Bun workspace for local background task orchestration in agent workflows. It provides a JSON-first CLI, reusable task lifecycle primitives, and opencode integrations for long-running local commands.
+
+## Status
+
+- Maturity: experimental
+- Maintainer model: solo-maintained
+- Repository visibility: private until explicitly approved for public access
+- Package channel: npm is the intended first channel, but packages are not published yet
+
+Use this project when an agent needs to start, inspect, stop, restart, or stream logs from local background processes through machine-stable JSON. Do not use it as a hosted job runner, remote execution service, credential vault, or multi-tenant scheduler.
+
+## Packages
+
+The root workspace package is private. The publishable package set is:
+
+- `@skastr0/background-tasks-core`: task lifecycle, log, and control-plane primitives
+- `@skastr0/background-tasks-cli`: Bun CLI with the `background-tasks` binary
+- `@skastr0/background-tasks-opencode-plugin`: opencode server plugin
+- `@skastr0/background-tasks-opencode-tui`: opencode TUI integration
+
+The first public release should publish npm packages only after repository visibility, npm trusted publishing or registry credential setup, package dry-runs, and maintainer approval are complete. GitHub Releases and Homebrew distribution are deferred until the CLI binary shape is stable.
+
+## Install
+
+Until packages are published, install from source:
+
+```sh
+bun install
+bun run build:binary
+bun run install:local
+```
+
+Requirements:
+
+- Bun 1.3 or newer
+- macOS or Linux for the current local-process workflow
 
 ## CLI Shape
 
@@ -116,15 +151,44 @@ background-tasks examples show start
 
 `schema show` returns JSON Schema generated from the same Effect Schema boundary used to decode payloads.
 
-## Local Build And Install
+## Configuration
+
+| Name | Required | Default | Description |
+| --- | --- | --- | --- |
+| `BACKGROUND_TASKS_HOME` | no | `$HOME/.local/state/background-tasks` | Local state root for task metadata, logs, and artifacts. |
+
+Task payloads may include environment variables for spawned commands. Treat those values as local secrets: do not commit payloads, logs, artifacts, or scan output containing credentials, private endpoints, customer data, or personal data.
+
+## Development
 
 ```sh
 bun install
 bun run typecheck
 bun test
 bun run build
-bun run build:binary
-bun run install:local
+bun run pack:dry-run
 ```
 
-`install:local` builds a standalone `dist/background-tasks` binary and copies it to `$HOME/.local/bin/background-tasks`.
+The full local verification command is:
+
+```sh
+bun run verify
+```
+
+## CI
+
+GitHub Actions runs on pushes to `main` and on pull requests. The workflow installs with Bun, runs `bun run verify`, and inspects npm package contents with `bun run pack:dry-run`. Workflow permissions are read-only.
+
+## Security
+
+This project starts local processes and captures local logs by design. Review payloads before running them, and do not treat the CLI as a sandbox. The opencode control-plane session code is local coordination data, not a long-lived credential.
+
+Please report security issues privately. See `SECURITY.md`.
+
+## Contributing And Support
+
+Issues are welcome when they include enough context to reproduce or evaluate the request. See `CONTRIBUTING.md` and `SUPPORT.md` for project boundaries.
+
+## License
+
+MIT. See `LICENSE`.

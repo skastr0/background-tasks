@@ -1,14 +1,34 @@
 {
-  "name": "@background-tasks/opencode-plugin",
+  "name": "@skastr0/background-tasks-opencode-plugin",
   "version": "0.1.0",
   "type": "module",
+  "files": [
+    "src"
+  ],
   "exports": {
     ".": "./src/server.ts"
   },
   "dependencies": {
-    "@background-tasks/core": "workspace:*"
+    "@skastr0/background-tasks-core": "0.1.0",
+    "effect": "^3.21.0"
   },
   "peerDependencies": {
     "@opencode-ai/plugin": ">=1.4.0"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "license": "MIT",
+  "description": "opencode plugin server for background-tasks control-plane tools.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

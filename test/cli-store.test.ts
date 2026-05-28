@@ -10,7 +10,7 @@ import {
   restartCliTask,
   startCliTask,
   stopCliTask,
-} from "@background-tasks/core/cli-store";
+} from "@skastr0/background-tasks-core/cli-store";
 
 const withStore = async <A>(run: (paths: ReturnType<typeof resolveCliStorePaths>) => Promise<A>) => {
   const root = await mkdtemp(join(tmpdir(), "background-tasks-test-"));

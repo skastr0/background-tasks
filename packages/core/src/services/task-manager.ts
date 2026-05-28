@@ -516,7 +516,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
     );
     const events = yield* PubSub.unbounded<TaskEvent>();
 
-    const attemptTokens = new Map<string, string>();
+    const attemptIds = new Map<string, string>();
     const processHandles = new Map<string, ManagedProcess>();
     const logBuffers = new Map<string, LogBufferInstance>();
     const startupSignals = new Map<string, Deferred.Deferred<StartOutcome>>();
@@ -780,7 +780,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
       }
 
       yield* Effect.sync(() => {
-        attemptTokens.delete(id);
+        attemptIds.delete(id);
         processHandles.delete(id);
         startupSignals.delete(id);
         logBuffers.delete(id);
@@ -875,11 +875,11 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const mutateTaskForAttempt = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       transform: (task: Task) => Task,
     ) {
       return yield* SubscriptionRef.modify(tasksRef, (registry) => {
-        if (attemptTokens.get(id) !== attemptToken) {
+        if (attemptIds.get(id) !== attemptId) {
           return [none, registry] as const;
         }
 
@@ -911,7 +911,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const getOrCreateFallbackBuffer = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       initialLine?: string,
     ) {
       const existing = logBuffers.get(id);
@@ -928,7 +928,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
       }
 
       yield* Effect.sync(() => {
-        if (attemptTokens.get(id) === attemptToken) {
+        if (attemptIds.get(id) === attemptId) {
           logBuffers.set(id, buffer);
         }
       });
@@ -938,18 +938,18 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const markRunningForAttempt = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       pid: number,
     ) {
-      yield* mutateTaskForAttempt(id, attemptToken, (task: Task) => markTaskRunning(task, pid));
+      yield* mutateTaskForAttempt(id, attemptId, (task: Task) => markTaskRunning(task, pid));
     });
 
     const markExitedForAttempt = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       exitCode: number,
     ) {
-      const mutation = yield* mutateTaskForAttempt(id, attemptToken, (task: Task) =>
+      const mutation = yield* mutateTaskForAttempt(id, attemptId, (task: Task) =>
         markTaskExited(task, exitCode),
       );
       if (
@@ -970,10 +970,10 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const markKilledForAttempt = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       signal: string,
     ) {
-      const mutation = yield* mutateTaskForAttempt(id, attemptToken, (task: Task) =>
+      const mutation = yield* mutateTaskForAttempt(id, attemptId, (task: Task) =>
         markTaskKilled(task),
       );
       if (
@@ -989,11 +989,11 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const markFailedForAttempt = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string,
+      attemptId: string,
       reason: string,
     ) {
-      yield* getOrCreateFallbackBuffer(id, attemptToken, reason);
-      const mutation = yield* mutateTaskForAttempt(id, attemptToken, (task: Task) =>
+      yield* getOrCreateFallbackBuffer(id, attemptId, reason);
+      const mutation = yield* mutateTaskForAttempt(id, attemptId, (task: Task) =>
         markTaskFailed(task),
       );
       if (
@@ -1009,14 +1009,14 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const awaitManagedProcess = Effect.fnUntraced(function* (
       id: string,
-      attemptToken: string | undefined,
+      attemptId: string | undefined,
     ) {
-      if (!attemptToken) {
+      if (!attemptId) {
         return yield* Effect.fail(new TaskAlreadyRunning({ id }));
       }
 
       const existing = processHandles.get(id);
-      if (existing && attemptTokens.get(id) === attemptToken) {
+      if (existing && attemptIds.get(id) === attemptId) {
         return existing;
       }
 
@@ -1026,7 +1026,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
       }
 
       const outcome = yield* Deferred.await(signal);
-      if (Either.isRight(outcome) && attemptTokens.get(id) === attemptToken) {
+      if (Either.isRight(outcome) && attemptIds.get(id) === attemptId) {
         return outcome.right;
       }
 
@@ -1145,7 +1145,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
 
     const runTaskLifecycle = (
       taskId: string,
-      attemptToken: string,
+      attemptId: string,
       input: NormalizedSpawnInput,
       signal: Deferred.Deferred<StartOutcome>,
     ) => {
@@ -1159,7 +1159,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
           spawnedPid = managed.pid;
 
           yield* Effect.sync(() => {
-            if (attemptTokens.get(taskId) === attemptToken) {
+            if (attemptIds.get(taskId) === attemptId) {
               processHandles.set(taskId, managed);
               logBuffers.set(taskId, managed.buffer);
             }
@@ -1168,21 +1168,21 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
           });
 
           yield* completeStartSignal(signal, Either.right(managed));
-          yield* markRunningForAttempt(taskId, attemptToken, managed.pid);
+          yield* markRunningForAttempt(taskId, attemptId, managed.pid);
 
           const exit = yield* Effect.either(managed.exitCode);
           if (Either.isRight(exit)) {
-            yield* markExitedForAttempt(taskId, attemptToken, Number(exit.right));
+            yield* markExitedForAttempt(taskId, attemptId, Number(exit.right));
             return;
           }
 
           switch (exit.left._tag) {
             case "ProcessKilled": {
-              yield* markKilledForAttempt(taskId, attemptToken, exit.left.signal);
+              yield* markKilledForAttempt(taskId, attemptId, exit.left.signal);
               return;
             }
             case "SpawnFailed": {
-              yield* markFailedForAttempt(taskId, attemptToken, exit.left.reason);
+              yield* markFailedForAttempt(taskId, attemptId, exit.left.reason);
               return;
             }
           }
@@ -1190,7 +1190,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
           Effect.catchTag("SpawnFailed", (error) =>
             Effect.gen(function* () {
               yield* completeStartSignal(signal, Either.left(error));
-              yield* markFailedForAttempt(taskId, attemptToken, error.reason);
+              yield* markFailedForAttempt(taskId, attemptId, error.reason);
             }),
           ),
           Effect.catchAllCause((cause) =>
@@ -1206,7 +1206,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
                   }),
                 ),
               );
-              yield* markFailedForAttempt(taskId, attemptToken, reason);
+              yield* markFailedForAttempt(taskId, attemptId, reason);
             }),
           ),
           Effect.ensuring(
@@ -1216,8 +1216,8 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
                   sharedActivePids.delete(spawnedPid);
                 }
 
-                if (attemptTokens.get(taskId) === attemptToken) {
-                  attemptTokens.delete(taskId);
+                if (attemptIds.get(taskId) === attemptId) {
+                  attemptIds.delete(taskId);
                   startupSignals.delete(taskId);
                   processHandles.delete(taskId);
                 }
@@ -1238,7 +1238,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
       },
     ) {
       const signal = yield* Deferred.make<StartOutcome>();
-      const attemptToken = crypto.randomUUID();
+      const attemptId = crypto.randomUUID();
 
       return yield* Effect.uninterruptibleMask((restore) =>
         Effect.gen(function* () {
@@ -1256,7 +1256,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
           }
 
           yield* Effect.sync(() => {
-            attemptTokens.set(task.id, attemptToken);
+            attemptIds.set(task.id, attemptId);
             processHandles.delete(task.id);
             logBuffers.delete(task.id);
             startupSignals.set(task.id, signal);
@@ -1280,7 +1280,7 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
           yield* FiberMap.run(
             fibers,
             task.id,
-            runTaskLifecycle(task.id, attemptToken, input, signal),
+            runTaskLifecycle(task.id, attemptId, input, signal),
           );
           yield* restore(Deferred.await(signal));
 
@@ -1301,8 +1301,8 @@ export class TaskManager extends Effect.Service<TaskManager>()("@bg-tasks/TaskMa
         return yield* Effect.fail(new TaskAlreadyRunning({ id }));
       }
 
-      const attemptToken = attemptTokens.get(id);
-      const managed = yield* awaitManagedProcess(id, attemptToken);
+      const attemptId = attemptIds.get(id);
+      const managed = yield* awaitManagedProcess(id, attemptId);
 
       yield* managed.kill("SIGTERM").pipe(Effect.catchTag("ProcessKilled", () => Effect.void));
 

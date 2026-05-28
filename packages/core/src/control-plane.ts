@@ -94,35 +94,35 @@ export type BgControlPlaneSpawnRequest =
 
 export type BgControlPlaneActionRequest =
   | {
-      readonly id: string;
-      readonly createdAt: string;
-      readonly ownerSessionId: string;
-      readonly authToken: string;
-      readonly action: "spawn";
-      readonly input: BgControlPlaneSpawnRequest;
-    }
+	      readonly id: string;
+	      readonly createdAt: string;
+	      readonly ownerSessionId: string;
+	      readonly sessionCode: string;
+	      readonly action: "spawn";
+	      readonly input: BgControlPlaneSpawnRequest;
+	    }
   | {
-      readonly id: string;
-      readonly createdAt: string;
-      readonly ownerSessionId: string;
-      readonly authToken: string;
-      readonly action: "kill" | "restart";
-      readonly taskId: string;
-    };
+	      readonly id: string;
+	      readonly createdAt: string;
+	      readonly ownerSessionId: string;
+	      readonly sessionCode: string;
+	      readonly action: "kill" | "restart";
+	      readonly taskId: string;
+	    };
 
 export type BgControlPlaneActionRequestInput =
   | {
-      readonly ownerSessionId: string;
-      readonly authToken: string;
-      readonly action: "spawn";
-      readonly input: BgControlPlaneSpawnRequest;
-    }
+	      readonly ownerSessionId: string;
+	      readonly sessionCode: string;
+	      readonly action: "spawn";
+	      readonly input: BgControlPlaneSpawnRequest;
+	    }
   | {
-      readonly ownerSessionId: string;
-      readonly authToken: string;
-      readonly action: "kill" | "restart";
-      readonly taskId: string;
-    };
+	      readonly ownerSessionId: string;
+	      readonly sessionCode: string;
+	      readonly action: "kill" | "restart";
+	      readonly taskId: string;
+	    };
 
 export type BgControlPlaneActionResponse =
   | {
@@ -264,16 +264,16 @@ const parseBgTaskSnapshot = (value: unknown): BgTaskSnapshot | undefined => {
   };
 };
 
-export const buildBgControlPlaneRegistrationMessage = (token: string): string =>
-  `${bgControlPlaneRegistrationPrefix} ${token}`;
+export const buildBgControlPlaneRegistrationMessage = (code: string): string =>
+  `${bgControlPlaneRegistrationPrefix} ${code}`;
 
 export const parseBgControlPlaneRegistrationMessage = (value: string): string | undefined => {
   if (!value.startsWith(bgControlPlaneRegistrationPrefix)) {
     return undefined;
   }
 
-  const token = value.slice(bgControlPlaneRegistrationPrefix.length).trim();
-  return /^[a-zA-Z0-9_-]{16,}$/.test(token) ? token : undefined;
+  const code = value.slice(bgControlPlaneRegistrationPrefix.length).trim();
+  return /^[a-zA-Z0-9_-]{16,}$/.test(code) ? code : undefined;
 };
 
 const parseBgControlPlaneSnapshotValue = (value: unknown): BgControlPlaneSnapshot | undefined => {
@@ -405,20 +405,20 @@ const parseBgControlPlaneActionRequestValue = (
   const id = readString(value, "id");
   const createdAt = readString(value, "createdAt");
   const ownerSessionId = readString(value, "ownerSessionId");
-  const authToken = readString(value, "authToken");
+  const sessionCode = readString(value, "sessionCode");
   const action = readString(value, "action");
-  if (!id || !createdAt || !ownerSessionId || !authToken || !action) {
+  if (!id || !createdAt || !ownerSessionId || !sessionCode || !action) {
     return undefined;
   }
 
   if (action === "spawn") {
     const input = parseBgControlPlaneSpawnRequest(value.input);
-    return input ? { id, createdAt, ownerSessionId, authToken, action, input } : undefined;
+    return input ? { id, createdAt, ownerSessionId, sessionCode, action, input } : undefined;
   }
 
   if (action === "kill" || action === "restart") {
     const taskId = readString(value, "taskId");
-    return taskId ? { id, createdAt, ownerSessionId, authToken, action, taskId } : undefined;
+    return taskId ? { id, createdAt, ownerSessionId, sessionCode, action, taskId } : undefined;
   }
 
   return undefined;
@@ -690,23 +690,23 @@ export function createBgControlPlaneActionRequest(
 ): BgControlPlaneActionRequest {
   if (input.action === "spawn") {
     return {
-      id: `bgcp_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
-      createdAt: new Date().toISOString(),
-      ownerSessionId: input.ownerSessionId,
-      authToken: input.authToken,
-      action: input.action,
-      input: input.input,
-    };
+	      id: `bgcp_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
+	      createdAt: new Date().toISOString(),
+	      ownerSessionId: input.ownerSessionId,
+	      sessionCode: input.sessionCode,
+	      action: input.action,
+	      input: input.input,
+	    };
   }
 
   return {
-    id: `bgcp_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
-    createdAt: new Date().toISOString(),
-    ownerSessionId: input.ownerSessionId,
-    authToken: input.authToken,
-    action: input.action,
-    taskId: input.taskId,
-  };
+	    id: `bgcp_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
+	    createdAt: new Date().toISOString(),
+	    ownerSessionId: input.ownerSessionId,
+	    sessionCode: input.sessionCode,
+	    action: input.action,
+	    taskId: input.taskId,
+	  };
 }
 
 export async function submitBgControlPlaneAction(

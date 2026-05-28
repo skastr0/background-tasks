@@ -9,7 +9,7 @@ import {
   resolveCliStorePaths,
   stopCliTask,
   type CliStorePaths,
-} from "@background-tasks/core/cli-store";
+} from "@skastr0/background-tasks-core/cli-store";
 
 const argv = (...args: readonly string[]) => ["bun", "background-tasks", ...args];
 

@@ -1,14 +1,35 @@
 {
-  "name": "@background-tasks/opencode-tui",
+  "name": "@skastr0/background-tasks-opencode-tui",
   "version": "0.1.0",
   "type": "module",
+  "files": [
+    "src",
+    "!src/**/*.test.ts"
+  ],
   "exports": {
     ".": "./src/tui.ts"
   },
   "dependencies": {
-    "@background-tasks/core": "workspace:*"
+    "@skastr0/background-tasks-core": "0.1.0",
+    "effect": "^3.21.0"
   },
   "peerDependencies": {
     "@opencode-ai/plugin": ">=1.4.0"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "license": "MIT",
+  "description": "opencode TUI integration for background-tasks session control.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

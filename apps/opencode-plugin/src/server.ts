@@ -5,7 +5,7 @@ import {
   restartCliTask,
   startCliTask,
   stopCliTask,
-} from "@background-tasks/core/cli-store";
+} from "@skastr0/background-tasks-core/cli-store";
 import { Effect } from "effect";
 
 const pluginId = "background-tasks";

@@ -1,11 +1,35 @@
 {
-  "name": "@background-tasks/core",
+  "name": "@skastr0/background-tasks-core",
   "version": "0.1.0",
   "type": "module",
+  "files": [
+    "src"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./cli-store": "./src/cli-store.ts",
     "./control-plane": "./src/control-plane.ts",
     "./agent-cli": "./src/agent-cli.ts"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.96.0",
+    "@effect/platform-node": "^0.94.0",
+    "effect": "^3.21.0"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "license": "MIT",
+  "description": "Core task lifecycle, log, and control-plane primitives for background-tasks.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

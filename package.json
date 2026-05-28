@@ -1,9 +1,9 @@
 {
-  "name": "background-tasks",
+  "name": "@skastr0/background-tasks",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.3.11",
+  "packageManager": "bun@1.3.14",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -15,7 +15,9 @@
     "build": "bun build apps/cli/src/cli.ts apps/opencode-plugin/src/server.ts apps/opencode-tui/src/tui.ts --outdir dist --target bun --format esm --external @opencode-ai/plugin --external @opencode-ai/plugin/tui",
     "build:cli": "bun build apps/cli/src/cli.ts --outdir dist --target bun --format esm",
     "build:binary": "bun build apps/cli/src/cli.ts --compile --outfile dist/background-tasks",
-    "install:local": "bun run build:binary && mkdir -p \"$HOME/.local/bin\" && cp dist/background-tasks \"$HOME/.local/bin/background-tasks\""
+    "install:local": "bun run build:binary && mkdir -p \"$HOME/.local/bin\" && cp dist/background-tasks \"$HOME/.local/bin/background-tasks\"",
+    "verify": "bun run typecheck && bun run test && bun run build",
+    "pack:dry-run": "npm pack --dry-run --workspace @skastr0/background-tasks-core --workspace @skastr0/background-tasks-cli --workspace @skastr0/background-tasks-opencode-plugin --workspace @skastr0/background-tasks-opencode-tui"
   },
   "dependencies": {
     "@effect/platform": "^0.96.0",
@@ -31,5 +33,15 @@
   },
   "peerDependencies": {
     "@opencode-ai/plugin": ">=1.4.0"
+  },
+  "license": "MIT",
+  "description": "Background task orchestration tools for agent workflows and opencode integrations.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
   }
 }

@@ -13,8 +13,8 @@ import {
   waitForCliTask,
   type CliStartInput,
   type CliStorePaths,
-} from "@background-tasks/core/cli-store";
-import { CommandInputError, type BackgroundTaskError } from "@background-tasks/core";
+} from "@skastr0/background-tasks-core/cli-store";
+import { CommandInputError, type BackgroundTaskError } from "@skastr0/background-tasks-core";
 import { Effect, JSONSchema, Option, ParseResult, Schema } from "effect";
 import { readFile, stat } from "node:fs/promises";
 import { relative, resolve } from "node:path";
@@ -1074,12 +1074,12 @@ const handleBuiltIn = (option: { readonly _tag: string }) => {
 };
 
 const inferCommand = (argv: readonly string[]) => {
-  const tokens = argv
+  const words = argv
     .slice(2)
-    .filter((token) => !token.startsWith("--"))
-    .filter((token) => token !== "-" && !token.startsWith("@"))
-    .filter((token) => !token.trim().startsWith("{") && !token.trim().startsWith("["));
-  return tokens.length ? tokens.slice(0, 2).join(" ") : executableName;
+    .filter((word) => !word.startsWith("--"))
+    .filter((word) => word !== "-" && !word.startsWith("@"))
+    .filter((word) => !word.trim().startsWith("{") && !word.trim().startsWith("["));
+  return words.length ? words.slice(0, 2).join(" ") : executableName;
 };
 
 const parseArgv = (argv: readonly string[]) =>

@@ -21,49 +21,51 @@
       },
     },
     "apps/cli": {
-      "name": "@background-tasks/cli",
+      "name": "@skastr0/background-tasks-cli",
       "version": "0.1.0",
       "bin": {
         "background-tasks": "./src/cli.ts",
       },
       "dependencies": {
-        "@background-tasks/core": "workspace:*",
+        "@effect/cli": "^0.75.0",
+        "@effect/platform-bun": "^0.89.0",
+        "@skastr0/background-tasks-core": "0.1.0",
+        "effect": "^3.21.0",
       },
     },
     "apps/opencode-plugin": {
-      "name": "@background-tasks/opencode-plugin",
+      "name": "@skastr0/background-tasks-opencode-plugin",
       "version": "0.1.0",
       "dependencies": {
-        "@background-tasks/core": "workspace:*",
+        "@skastr0/background-tasks-core": "0.1.0",
+        "effect": "^3.21.0",
       },
       "peerDependencies": {
         "@opencode-ai/plugin": ">=1.4.0",
       },
     },
     "apps/opencode-tui": {
-      "name": "@background-tasks/opencode-tui",
+      "name": "@skastr0/background-tasks-opencode-tui",
       "version": "0.1.0",
       "dependencies": {
-        "@background-tasks/core": "workspace:*",
+        "@skastr0/background-tasks-core": "0.1.0",
+        "effect": "^3.21.0",
       },
       "peerDependencies": {
         "@opencode-ai/plugin": ">=1.4.0",
       },
     },
     "packages/core": {
-      "name": "@background-tasks/core",
+      "name": "@skastr0/background-tasks-core",
       "version": "0.1.0",
+      "dependencies": {
+        "@effect/platform": "^0.96.0",
+        "@effect/platform-node": "^0.94.0",
+        "effect": "^3.21.0",
+      },
     },
   },
   "packages": {
-    "@background-tasks/cli": ["@background-tasks/cli@workspace:apps/cli"],
-
-    "@background-tasks/core": ["@background-tasks/core@workspace:packages/core"],
-
-    "@background-tasks/opencode-plugin": ["@background-tasks/opencode-plugin@workspace:apps/opencode-plugin"],
-
-    "@background-tasks/opencode-tui": ["@background-tasks/opencode-tui@workspace:apps/opencode-tui"],
-
     "@effect/cli": ["@effect/cli@0.75.1", "", { "dependencies": { "ini": "^4.1.3", "toml": "^3.0.0", "yaml": "^2.5.0" }, "peerDependencies": { "@effect/platform": "^0.96.0", "@effect/printer": "^0.49.0", "@effect/printer-ansi": "^0.49.0", "effect": "^3.21.1" } }, "sha512-aDZ1OZzaFAb6NyBOrP+Bl52eICds5ERI9aa67LzloJELt5SCWeNwthtaEacBvvMkwVUcykJ+YHcGCkD1t47g8g=="],
 
     "@effect/cluster": ["@effect/cluster@0.58.2", "", { "dependencies": { "kubernetes-types": "^1.30.0" }, "peerDependencies": { "@effect/platform": "^0.96.1", "@effect/rpc": "^0.75.1", "@effect/sql": "^0.51.1", "@effect/workflow": "^0.18.0", "effect": "^3.21.2" } }, "sha512-oxQ3zUhXq0mJA7Y4TliALMP39Bx0LtAIxcqOW1Bdjh6uk+nG7kul/Puw80SwlcYGv3ul50SG+gvSRUTXB8d3JQ=="],
@@ -133,6 +135,14 @@
     "@parcel/watcher-win32-ia32": ["@parcel/watcher-win32-ia32@2.5.6", "", { "os": "win32", "cpu": "ia32" }, "sha512-k35yLp1ZMwwee3Ez/pxBi5cf4AoBKYXj00CZ80jUz5h8prpiaQsiRPKQMxoLstNuqe2vR4RNPEAEcjEFzhEz/g=="],
 
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.5.6", "", { "os": "win32", "cpu": "x64" }, "sha512-hbQlYcCq5dlAX9Qx+kFb0FHue6vbjlf0FrNzSKdYK2APUf7tGfGxQCk2ihEREmbR6ZMc0MVAD5RIX/41gpUzTw=="],
+
+    "@skastr0/background-tasks-cli": ["@skastr0/background-tasks-cli@workspace:apps/cli"],
+
+    "@skastr0/background-tasks-core": ["@skastr0/background-tasks-core@workspace:packages/core"],
+
+    "@skastr0/background-tasks-opencode-plugin": ["@skastr0/background-tasks-opencode-plugin@workspace:apps/opencode-plugin"],
+
+    "@skastr0/background-tasks-opencode-tui": ["@skastr0/background-tasks-opencode-tui@workspace:apps/opencode-tui"],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 

@@ -8,7 +8,7 @@ import {
   extractAgentModelFromArgs,
   extractAgentPromptFromArgs,
   type BgAgentCliKind,
-} from "@background-tasks/core/agent-cli";
+} from "@skastr0/background-tasks-core/agent-cli";
 import {
   buildBgControlPlaneRegistrationMessage,
   createBgControlPlaneActionRequest,
@@ -23,7 +23,7 @@ import {
   type BgControlPlaneSnapshot,
   type BgControlPlaneSpawnRequest,
   type BgTaskSnapshot,
-} from "@background-tasks/core/control-plane";
+} from "@skastr0/background-tasks-core/control-plane";
 import { promptWithSessionContext, type TuiSessionPromptClient } from "./session-prompt";
 
 export interface BackgroundTasksTuiPluginOptions extends PluginOptions {
@@ -252,7 +252,7 @@ export const composeDraftToSpawnRequest = (
 const createBridge = (host: TuiHostService): BackgroundTasksTuiBridgeService => {
   let cachedPaths: BgControlPlanePaths | undefined;
   let cliAvailability: CliAvailability | undefined;
-  const sessionTokens = new Map<string, string>();
+  const sessionCodes = new Map<string, string>();
 
   const getPaths = async (): Promise<BgControlPlanePaths> => {
     if (cachedPaths) {
@@ -298,27 +298,27 @@ const createBridge = (host: TuiHostService): BackgroundTasksTuiBridgeService => 
     return readBgControlPlaneLogs(paths, id, options);
   };
 
-  const ensureSessionToken = async (sessionID: string): Promise<string> => {
-    const existing = sessionTokens.get(sessionID);
+  const ensureSessionCode = async (sessionID: string): Promise<string> => {
+    const existing = sessionCodes.get(sessionID);
     if (existing) {
       return existing;
     }
 
-    const token = crypto.randomUUID().replace(/-/g, "");
+    const code = crypto.randomUUID().replace(/-/g, "");
     await Effect.runPromise(
       promptWithSessionContext(host.api.client, sessionID, {
         noReply: true,
         parts: [
           {
             type: "text",
-            text: buildBgControlPlaneRegistrationMessage(token),
+            text: buildBgControlPlaneRegistrationMessage(code),
             synthetic: true,
           },
         ],
       }),
     );
-    sessionTokens.set(sessionID, token);
-    return token;
+    sessionCodes.set(sessionID, code);
+    return code;
   };
 
   const runAction = async (
@@ -328,10 +328,10 @@ const createBridge = (host: TuiHostService): BackgroundTasksTuiBridgeService => 
       | { readonly action: "kill" | "restart"; readonly taskId: string },
   ): Promise<BgTaskSnapshot> => {
     const paths = await getPaths();
-    const authToken = await ensureSessionToken(sessionID);
+    const sessionCode = await ensureSessionCode(sessionID);
     const request = createBgControlPlaneActionRequest({
       ownerSessionId: sessionID,
-      authToken,
+      sessionCode,
       ...action,
     });
     await submitBgControlPlaneAction(paths, request);

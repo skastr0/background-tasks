@@ -1,0 +1,34 @@
+name: Proposal
+description: Suggest a scoped feature or behavior change.
+title: "[Proposal]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This project is solo-maintained. Please keep proposals scoped and explain the maintenance cost.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and maintenance cost
+      description: What would this add, remove, or make harder to maintain?
+    validations:
+      required: true

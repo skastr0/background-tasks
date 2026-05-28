@@ -6,8 +6,8 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@background-tasks/core": ["packages/core/src/index.ts"],
-      "@background-tasks/core/*": ["packages/core/src/*"]
+      "@skastr0/background-tasks-core": ["packages/core/src/index.ts"],
+      "@skastr0/background-tasks-core/*": ["packages/core/src/*"]
     },
     "strict": true,
     "skipLibCheck": true,

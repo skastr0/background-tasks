@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Effect, Scope } from "effect";
-import { LogBuffer } from "@background-tasks/core";
+import { LogBuffer } from "@skastr0/background-tasks-core";
 
 const runScopedLogBuffer = <A, E>(
   program: Effect.Effect<A, E, LogBuffer | Scope.Scope>,
