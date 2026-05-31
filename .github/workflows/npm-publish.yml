@@ -32,9 +32,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
-      - name: Use latest npm
-        run: npm install -g npm@latest
-
       - name: Install
         run: bun install --frozen-lockfile
 
