@@ -1,23 +1,26 @@
 {
-  "name": "@skastr0/background-tasks",
+  "name": "@skastr0/background-tasks-workspace",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "packageManager": "bun@1.3.14",
   "workspaces": [
     "packages/*",
+    "packages/npm/*",
     "apps/*"
   ],
   "scripts": {
     "dev": "bun run apps/cli/src/cli.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build apps/cli/src/cli.ts apps/opencode-plugin/src/server.ts apps/opencode-tui/src/tui.ts --outdir dist --target bun --format esm --external @opencode-ai/plugin --external @opencode-ai/plugin/tui",
+    "build": "bun build apps/cli/src/cli.ts apps/opencode/src/server.ts apps/opencode/src/tui.ts --outdir dist --target bun --format esm --external @opencode-ai/plugin --external @opencode-ai/plugin/tui",
     "build:cli": "bun build apps/cli/src/cli.ts --outdir dist --target bun --format esm",
     "build:binary": "bun build apps/cli/src/cli.ts --compile --outfile dist/background-tasks",
+    "build:npm-cli": "bun run scripts/build-npm-cli-packages.ts",
     "install:local": "bun run build:binary && mkdir -p \"$HOME/.local/bin\" && cp dist/background-tasks \"$HOME/.local/bin/background-tasks\"",
+    "smoke:npm-cli": "bun run build:npm-cli && node packages/npm/background-tasks/bin/background-tasks.js --version",
     "verify": "bun run typecheck && bun run test && bun run build",
-    "pack:dry-run": "npm pack --dry-run --workspace @skastr0/background-tasks-core --workspace @skastr0/background-tasks-cli --workspace @skastr0/background-tasks-opencode-plugin --workspace @skastr0/background-tasks-opencode-tui"
+    "pack:dry-run": "bun run build:npm-cli && npm pack --dry-run --workspace @skastr0/background-tasks-core --workspace @skastr0/background-tasks-darwin-arm64 --workspace @skastr0/background-tasks-darwin-x64 --workspace @skastr0/background-tasks-linux-arm64 --workspace @skastr0/background-tasks-linux-x64 --workspace @skastr0/background-tasks --workspace @skastr0/background-tasks-opencode"
   },
   "dependencies": {
     "@effect/platform": "^0.96.0",

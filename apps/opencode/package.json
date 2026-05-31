@@ -1,35 +1,44 @@
 {
-  "name": "@skastr0/background-tasks-cli",
+  "name": "@skastr0/background-tasks-opencode",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "files": [
-    "src"
+    "src",
+    "!src/**/*.test.ts"
   ],
+  "exports": {
+    ".": "./src/server.ts",
+    "./server": "./src/server.ts",
+    "./tui": "./src/tui.ts"
+  },
   "keywords": [
     "background-tasks",
     "agent-workflows",
-    "cli",
-    "bun"
+    "opencode",
+    "opencode-plugin",
+    "opencode-tui"
   ],
   "dependencies": {
-    "@effect/cli": "^0.75.0",
-    "@effect/platform-bun": "^0.89.0",
+    "@opencode-ai/plugin": "^1.4.0",
     "@skastr0/background-tasks-core": "0.1.0",
     "effect": "^3.21.0"
   },
   "engines": {
-    "bun": ">=1.3.0"
+    "bun": ">=1.3.0",
+    "opencode": ">=1.4.0 <2"
   },
   "license": "MIT",
-  "description": "Source workspace for the background-tasks CLI.",
+  "description": "OpenCode server and TUI integration for background-tasks.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skastr0/background-tasks.git",
-    "directory": "apps/cli"
+    "directory": "apps/opencode"
   },
   "homepage": "https://github.com/skastr0/background-tasks#readme",
   "bugs": {
     "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

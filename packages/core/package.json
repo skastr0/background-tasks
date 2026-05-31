@@ -11,6 +11,12 @@
     "./control-plane": "./src/control-plane.ts",
     "./agent-cli": "./src/agent-cli.ts"
   },
+  "keywords": [
+    "background-tasks",
+    "agent-workflows",
+    "bun",
+    "effect"
+  ],
   "dependencies": {
     "@effect/platform": "^0.96.0",
     "@effect/platform-node": "^0.94.0",
@@ -23,7 +29,8 @@
   "description": "Core task lifecycle, log, and control-plane primitives for background-tasks.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/skastr0/background-tasks.git"
+    "url": "git+https://github.com/skastr0/background-tasks.git",
+    "directory": "packages/core"
   },
   "homepage": "https://github.com/skastr0/background-tasks#readme",
   "bugs": {

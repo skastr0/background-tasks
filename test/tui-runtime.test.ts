@@ -7,13 +7,13 @@ import {
   parseArgsInput,
   parseTagsInput,
   type ComposeDraft,
-} from "../apps/opencode-tui/src/runtime.ts";
+} from "../apps/opencode/src/runtime.ts";
 
 const meta: TuiPluginMeta = {
   id: "background-tasks-tui",
   source: "file",
-  spec: "apps/opencode-tui/src/tui.ts",
-  target: "apps/opencode-tui/src/tui.ts",
+  spec: "apps/opencode/src/tui.ts",
+  target: "apps/opencode/src/tui.ts",
   first_time: Date.now(),
   last_time: Date.now(),
   time_changed: Date.now(),

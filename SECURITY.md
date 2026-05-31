@@ -52,8 +52,11 @@ The maintainer will coordinate disclosure timing based on severity, available fi
 Official release channels are not live yet. The intended first public channel is npm under the `@skastr0` scope:
 
 - `@skastr0/background-tasks-core`
-- `@skastr0/background-tasks-cli`
-- `@skastr0/background-tasks-opencode-plugin`
-- `@skastr0/background-tasks-opencode-tui`
+- `@skastr0/background-tasks`
+- `@skastr0/background-tasks-darwin-arm64`
+- `@skastr0/background-tasks-darwin-x64`
+- `@skastr0/background-tasks-linux-arm64`
+- `@skastr0/background-tasks-linux-x64`
+- `@skastr0/background-tasks-opencode`
 
 Do not trust binaries, packages, or install commands from channels not listed here or in `README.md`.

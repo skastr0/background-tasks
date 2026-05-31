@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, test } from "bun:test";
 import { Effect } from "effect";
-import plugin from "../apps/opencode-plugin/src/server.ts";
+import plugin from "../apps/opencode/src/server.ts";
 import { listCliTasks, startCliTask } from "@skastr0/background-tasks-core/cli-store";
 
 const makeContext = () =>

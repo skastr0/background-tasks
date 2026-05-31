@@ -16,11 +16,18 @@ Use this project when an agent needs to start, inspect, stop, restart, or stream
 The root workspace package is private. The publishable package set is:
 
 - `@skastr0/background-tasks-core`: task lifecycle, log, and control-plane primitives
-- `@skastr0/background-tasks-cli`: Bun CLI with the `background-tasks` binary
-- `@skastr0/background-tasks-opencode-plugin`: opencode server plugin
-- `@skastr0/background-tasks-opencode-tui`: opencode TUI integration
+- `@skastr0/background-tasks`: npm runner package for the `background-tasks` CLI
+- `@skastr0/background-tasks-darwin-arm64`: macOS arm64 standalone CLI binary
+- `@skastr0/background-tasks-darwin-x64`: macOS x64 standalone CLI binary
+- `@skastr0/background-tasks-linux-arm64`: Linux arm64 standalone CLI binary
+- `@skastr0/background-tasks-linux-x64`: Linux x64 standalone CLI binary
+- `@skastr0/background-tasks-opencode`: OpenCode server plugin and TUI integration
 
-The first public release should publish npm packages only after repository visibility, npm trusted publishing or registry credential setup, package dry-runs, and maintainer approval are complete. GitHub Releases and Homebrew distribution are deferred until the CLI binary shape is stable.
+`apps/cli` is a private source workspace. The public CLI package uses a Node launcher that delegates to one of the platform binary packages.
+
+The first public release should publish npm packages only after repository visibility, npm trusted publishing or registry credential setup, package dry-runs, and maintainer approval are complete. GitHub Releases and Homebrew distribution are deferred.
+
+See `PUBLISHING.md` for the release authority model, package order, OpenCode plugin install shape, and CLI binary topology.
 
 ## Install
 
@@ -36,6 +43,14 @@ Requirements:
 
 - Bun 1.3 or newer
 - macOS or Linux for the current local-process workflow
+
+After publication, the intended npm runner entrypoints are:
+
+```sh
+npx @skastr0/background-tasks --version
+bunx @skastr0/background-tasks --version
+pnpm dlx @skastr0/background-tasks --version
+```
 
 ## CLI Shape
 
@@ -166,6 +181,7 @@ bun install
 bun run typecheck
 bun test
 bun run build
+bun run smoke:npm-cli
 bun run pack:dry-run
 ```
 
@@ -174,6 +190,8 @@ The full local verification command is:
 ```sh
 bun run verify
 ```
+
+Package and release preparation details live in `PUBLISHING.md`.
 
 ## CI
 

@@ -1,0 +1,42 @@
+{
+  "name": "@skastr0/background-tasks",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JSON-first background task orchestration CLI for agent workflows.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git",
+    "directory": "packages/npm/background-tasks"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "keywords": [
+    "background-tasks",
+    "agent-workflows",
+    "cli",
+    "bun"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "background-tasks": "bin/background-tasks.js"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "@skastr0/background-tasks-darwin-arm64": "0.1.0",
+    "@skastr0/background-tasks-darwin-x64": "0.1.0",
+    "@skastr0/background-tasks-linux-arm64": "0.1.0",
+    "@skastr0/background-tasks-linux-x64": "0.1.0"
+  }
+}

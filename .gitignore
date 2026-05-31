@@ -1,5 +1,7 @@
 node_modules
 dist
+packages/npm/*/LICENSE
+packages/npm/background-tasks-*/bin/
 .DS_Store
 release.md
 .env

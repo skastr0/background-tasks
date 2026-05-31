@@ -33,26 +33,13 @@
         "effect": "^3.21.0",
       },
     },
-    "apps/opencode-plugin": {
-      "name": "@skastr0/background-tasks-opencode-plugin",
+    "apps/opencode": {
+      "name": "@skastr0/background-tasks-opencode",
       "version": "0.1.0",
       "dependencies": {
+        "@opencode-ai/plugin": "^1.4.0",
         "@skastr0/background-tasks-core": "0.1.0",
         "effect": "^3.21.0",
-      },
-      "peerDependencies": {
-        "@opencode-ai/plugin": ">=1.4.0",
-      },
-    },
-    "apps/opencode-tui": {
-      "name": "@skastr0/background-tasks-opencode-tui",
-      "version": "0.1.0",
-      "dependencies": {
-        "@skastr0/background-tasks-core": "0.1.0",
-        "effect": "^3.21.0",
-      },
-      "peerDependencies": {
-        "@opencode-ai/plugin": ">=1.4.0",
       },
     },
     "packages/core": {
@@ -63,6 +50,35 @@
         "@effect/platform-node": "^0.94.0",
         "effect": "^3.21.0",
       },
+    },
+    "packages/npm/background-tasks": {
+      "name": "@skastr0/background-tasks",
+      "version": "0.1.0",
+      "bin": {
+        "background-tasks": "bin/background-tasks.js",
+      },
+      "optionalDependencies": {
+        "@skastr0/background-tasks-darwin-arm64": "0.1.0",
+        "@skastr0/background-tasks-darwin-x64": "0.1.0",
+        "@skastr0/background-tasks-linux-arm64": "0.1.0",
+        "@skastr0/background-tasks-linux-x64": "0.1.0",
+      },
+    },
+    "packages/npm/background-tasks-darwin-arm64": {
+      "name": "@skastr0/background-tasks-darwin-arm64",
+      "version": "0.1.0",
+    },
+    "packages/npm/background-tasks-darwin-x64": {
+      "name": "@skastr0/background-tasks-darwin-x64",
+      "version": "0.1.0",
+    },
+    "packages/npm/background-tasks-linux-arm64": {
+      "name": "@skastr0/background-tasks-linux-arm64",
+      "version": "0.1.0",
+    },
+    "packages/npm/background-tasks-linux-x64": {
+      "name": "@skastr0/background-tasks-linux-x64",
+      "version": "0.1.0",
     },
   },
   "packages": {
@@ -136,13 +152,21 @@
 
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.5.6", "", { "os": "win32", "cpu": "x64" }, "sha512-hbQlYcCq5dlAX9Qx+kFb0FHue6vbjlf0FrNzSKdYK2APUf7tGfGxQCk2ihEREmbR6ZMc0MVAD5RIX/41gpUzTw=="],
 
+    "@skastr0/background-tasks": ["@skastr0/background-tasks@workspace:packages/npm/background-tasks"],
+
     "@skastr0/background-tasks-cli": ["@skastr0/background-tasks-cli@workspace:apps/cli"],
 
     "@skastr0/background-tasks-core": ["@skastr0/background-tasks-core@workspace:packages/core"],
 
-    "@skastr0/background-tasks-opencode-plugin": ["@skastr0/background-tasks-opencode-plugin@workspace:apps/opencode-plugin"],
+    "@skastr0/background-tasks-darwin-arm64": ["@skastr0/background-tasks-darwin-arm64@workspace:packages/npm/background-tasks-darwin-arm64"],
 
-    "@skastr0/background-tasks-opencode-tui": ["@skastr0/background-tasks-opencode-tui@workspace:apps/opencode-tui"],
+    "@skastr0/background-tasks-darwin-x64": ["@skastr0/background-tasks-darwin-x64@workspace:packages/npm/background-tasks-darwin-x64"],
+
+    "@skastr0/background-tasks-linux-arm64": ["@skastr0/background-tasks-linux-arm64@workspace:packages/npm/background-tasks-linux-arm64"],
+
+    "@skastr0/background-tasks-linux-x64": ["@skastr0/background-tasks-linux-x64@workspace:packages/npm/background-tasks-linux-x64"],
+
+    "@skastr0/background-tasks-opencode": ["@skastr0/background-tasks-opencode@workspace:apps/opencode"],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 

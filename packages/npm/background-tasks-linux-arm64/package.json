@@ -1,0 +1,29 @@
+{
+  "name": "@skastr0/background-tasks-linux-arm64",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "background-tasks standalone CLI binary for Linux arm64.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skastr0/background-tasks.git",
+    "directory": "packages/npm/background-tasks-linux-arm64"
+  },
+  "homepage": "https://github.com/skastr0/background-tasks#readme",
+  "bugs": {
+    "url": "https://github.com/skastr0/background-tasks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "files": [
+    "bin",
+    "LICENSE"
+  ]
+}
