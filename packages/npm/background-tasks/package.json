@@ -1,6 +1,6 @@
 {
   "name": "@skastr0/background-tasks",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "JSON-first background task orchestration CLI for agent workflows.",
   "license": "MIT",
@@ -34,9 +34,9 @@
     "node": ">=18"
   },
   "optionalDependencies": {
-    "@skastr0/background-tasks-darwin-arm64": "0.1.1",
-    "@skastr0/background-tasks-darwin-x64": "0.1.1",
-    "@skastr0/background-tasks-linux-arm64": "0.1.1",
-    "@skastr0/background-tasks-linux-x64": "0.1.1"
+    "@skastr0/background-tasks-darwin-arm64": "0.1.2",
+    "@skastr0/background-tasks-darwin-x64": "0.1.2",
+    "@skastr0/background-tasks-linux-arm64": "0.1.2",
+    "@skastr0/background-tasks-linux-x64": "0.1.2"
   }
 }

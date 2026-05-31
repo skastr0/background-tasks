@@ -4,6 +4,10 @@ All notable changes to this project will be documented here.
 
 ## Unreleased
 
+## 0.1.2
+
+- Fix CLI-reported version in the standalone npm binary.
+
 ## 0.1.1
 
 - Validate CI trusted-publishing release path after first npm package bootstrap.

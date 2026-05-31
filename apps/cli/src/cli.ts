@@ -19,7 +19,7 @@ import { Effect, JSONSchema, Option, ParseResult, Schema } from "effect";
 import { readFile, stat } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 
-const cliVersion = "0.1.0";
+const cliVersion = "0.1.2";
 const executableName = "background-tasks";
 const defaultLogLines = 100;
 
