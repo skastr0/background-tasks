@@ -4,6 +4,10 @@ All notable changes to this project will be documented here.
 
 ## Unreleased
 
+## 0.1.1
+
+- Validate CI trusted-publishing release path after first npm package bootstrap.
+
 - Prepared public repository files and package metadata for the first experimental npm release.
 - Added a CI-first npm publishing workflow and release authority plan.
 - Added the npm runner CLI topology: `@skastr0/background-tasks` plus platform binary packages.

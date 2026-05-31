@@ -1,6 +1,6 @@
 {
   "name": "@skastr0/background-tasks-linux-arm64",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "background-tasks standalone CLI binary for Linux arm64.",
   "license": "MIT",

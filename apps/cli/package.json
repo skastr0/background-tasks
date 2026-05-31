@@ -1,6 +1,6 @@
 {
   "name": "@skastr0/background-tasks-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "files": [
@@ -15,7 +15,7 @@
   "dependencies": {
     "@effect/cli": "^0.75.0",
     "@effect/platform-bun": "^0.89.0",
-    "@skastr0/background-tasks-core": "0.1.0",
+    "@skastr0/background-tasks-core": "0.1.1",
     "effect": "^3.21.0"
   },
   "engines": {

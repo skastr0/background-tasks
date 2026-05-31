@@ -1,6 +1,6 @@
 {
   "name": "@skastr0/background-tasks-opencode",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "src",
@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "@opencode-ai/plugin": "^1.4.0",
-    "@skastr0/background-tasks-core": "0.1.0",
+    "@skastr0/background-tasks-core": "0.1.1",
     "effect": "^3.21.0"
   },
   "engines": {
